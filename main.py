@@ -168,6 +168,7 @@ import random
 from chess import polyglot
 import getopt
 from io import StringIO
+import chess.engine 
 
 
 # Constants
@@ -1911,6 +1912,28 @@ def analyze_games(argv):
     print("\nDone!!")
 
 
+def newMain():
+    engine = chess.engine.SimpleEngine.popen_uci("/Users/rli233/Documents/stockfish-10-64")
+    board = chess.Board("3r2k1/pp3p2/1b3P2/6B1/6n1/1BNr4/PP5P/3R1R1K w - - 9 28")
+    # info = engine.analyse(board, chess.engine.Limit(depth=20))
+    # print(engine.play(board, chess.engine.Limit(depth=20)).ponder)
+    # print(engine.play(board, chess.engine.Limit(depth=20)).info )
+    with engine.analysis(board) as analysis:
+        for info in analysis:
+            print(info.get("pv"))
+
+            # Arbitrary stop condition.
+            if info.get("seldepth", 0) > 20:
+                break
+
+    # engine.quit()
+    # print("Score:", info["score"])
+    # Score: #1
+
+    engine.quit() 
+
+    return 0 
+
 def main(argv):
     """ start """
     print(APP_NAME + ' v' + APP_VERSION + '\n')
@@ -1918,8 +1941,8 @@ def main(argv):
     # ['--file', 'bilbaomast16win.pgn',
     # '--engine', 'stockfish_120716_x64_modern.exe',
     # '--eoption', 'Hash value 128, Threads value 1']
-    analyze_games(argv)
-    
+    # analyze_games(argv)
+    newMain() 
 
 if __name__ == "__main__":
     main(sys.argv[1:])
