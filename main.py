@@ -167,6 +167,7 @@ import subprocess
 import random
 from chess import polyglot
 import getopt
+from io import StringIO
 
 
 # Constants
@@ -552,16 +553,16 @@ def save_headers(game, outputFN, engine_name, num_threads, nMoveTime):
         annotator name or the engine that analyzes the game
     """
 
-    # Save headers
-    for key, value in game.headers.iteritems():
-        with codecs.open(outputFN, 'a+', 'utf8') as f:
-            if key != 'Annotator':
-                f.write('[%s \"%s\"]\n' %(key, value))
+    # # Save headers
+    # for key, value in game.headers.iteritems():
+    #     with open(outputFN, 'a+') as f:
+    #         if key != 'Annotator':
+    #             f.write('[%s \"%s\"]\n' %(key, value))
 
-    # Write the Annotator last
-    with codecs.open(outputFN, 'a+', 'utf8') as f:
-        f.write('[Annotator "%s (%0.1fs/pos, thread=%d)"]\n\n' %(engine_name,
-                        float(nMoveTime)/1000, num_threads))
+    # # Write the Annotator last
+    # with open(outputFN, 'a+') as f:
+    #     f.write('[Annotator "%s (%0.1fs/pos, thread=%d)"]\n\n' %(engine_name,
+    #                     float(nMoveTime)/1000, num_threads))
     
 
 def is_number(s):
@@ -993,7 +994,7 @@ def analyze_fen(engineName, fen, _eng_option, movetimev, multipvv, nshortPv):
     p = subprocess.Popen(engineName, stdin=subprocess.PIPE,
                          stdout=subprocess.PIPE,
                          stderr=subprocess.STDOUT)
-    p.stdin.write("uci\n")
+    p.stdin.write(str.encode("uci\n"))
     for eline in iter(p.stdout.readline, ''):
         eline = eline.strip()
         if "uciok" in eline:
@@ -1133,16 +1134,19 @@ def get_engine_id(enginefn):
     p = subprocess.Popen(enginefn, stdin=subprocess.PIPE,
                          stdout=subprocess.PIPE,
                          stderr=subprocess.STDOUT)
-    p.stdin.write('uci\n')
+    p.stdin.write(str.encode('uci\n'))
     for eline in iter(p.stdout.readline, ''):
         eline = eline.strip()
-        if 'id name' in eline:
+        if str.encode('id name') in eline:
             a = eline.split()
             engine_idname = ' '.join(a[2:])
-        elif 'uciok' in eline:
+        elif str.encode('uciok') in eline:
             break
+        else:
+            break
+    engine_idname = str(eline)
     # Quit the engine
-    p.communicate('quit\n')
+    p.communicate(str.encode('quit\n'))
     p.poll()
     if p.returncode is None:
         print('Warning!! the process has not terminated yet in get_engine_id()')
@@ -1267,11 +1271,13 @@ def analyze_games(argv):
 
     # Open pgn file for reading
     # ifo = open(pgn_file, 'r')
-    ifo = codecs.open(pgn_file, 'r', 'utf8')
+    with open("game.pgn", 'r+') as f:
+        ifo = f.read()
+    
+    game = chess.pgn.read_game(StringIO(ifo)) 
     alt_index = 0
 
     # Read the games in the pgn file one by one
-    game = chess.pgn.read_game(ifo) 
     while game != None:
         gameCnt += 1
         maxMoveNum = GetMaxMoveNumber(game)
