@@ -1,0 +1,41 @@
+<!-- <html>
+  <body>
+    <p id='server-time'></p>
+    <script>
+      var HOST = location.origin.replace(/^http/, 'ws')
+      var ws = new WebSocket(HOST);
+      var el = document.getElementById('server-time');
+      ws.onmessage = function (event) {
+        el.innerHTML = 'Server time: ' + event.data;
+      };
+    </script>
+  </body>
+</html> -->
+
+<!DOCTYPE html>
+<pre id="log"></pre>
+<input type="text" name="wss uci" value="uci">
+<button onclick="myFunction()">Send</button>
+
+<script>
+  // helper function: log message to screen
+  function log(msg) {
+    document.getElementById('log').textContent += msg + '\n';
+  }
+  function myFunction(){
+    ws.send("uci")
+  }
+
+  // setup websocket with callbacks
+  var ws = new WebSocket('ws://localhost:3000/');
+  ws.onopen = function() {
+    log('CONNECT');
+  };
+  ws.onclose = function() {
+    log('DISCONNECT');
+  };
+  ws.onmessage = function(event) {
+    log('MESSAGE: ' + event.data);
+  };
+
+</script>
