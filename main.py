@@ -1915,16 +1915,17 @@ def analyze_games(argv):
 def newMain():
     engine = chess.engine.SimpleEngine.popen_uci("/Users/rli233/Documents/stockfish-10-64")
     board = chess.Board("3r2k1/pp3p2/1b3P2/6B1/6n1/1BNr4/PP5P/3R1R1K w - - 9 28")
-    # info = engine.analyse(board, chess.engine.Limit(depth=20))
+    info = engine.analyse(board, chess.engine.Limit(depth=25), multipv=3, info=chess.engine.INFO_ALL)
     # print(engine.play(board, chess.engine.Limit(depth=20)).ponder)
     # print(engine.play(board, chess.engine.Limit(depth=20)).info )
-    with engine.analysis(board) as analysis:
-        for info in analysis:
-            print(info.get("pv"))
+    print(info[0])
+    # with engine.analysis(board, 3, chess.engine.INFO_ALL, ) as analysis:
+    #     for info in analysis:
+    #         print(info.get("pv"))
 
-            # Arbitrary stop condition.
-            if info.get("seldepth", 0) > 20:
-                break
+    #         # Arbitrary stop condition.
+    #         if info.get("seldepth", 0) > 20:
+    #             break
 
     # engine.quit()
     # print("Score:", info["score"])
