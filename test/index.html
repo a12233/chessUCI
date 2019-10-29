@@ -1,0 +1,59 @@
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Bluemix Chess</title>
+    <link rel="stylesheet" href="css/chessboard-0.3.0.min.css" />
+  </head>
+  <body>
+    <table width="640">
+      <tr>
+        <td>
+          <h3>Game Status: <span id="status"></span></h3>
+        </td>
+    </tr>
+  </table>
+
+    <table>
+      <tr>
+        <td>
+          <div id="board" style="width: 640px"></div>
+        </td>
+        <td>
+          <form>
+            <fieldset>
+              <legend>Black's Brain</legend>
+              <input type="radio" name="blackBrain" value="human" id="bHuman" checked="checked" />
+              <label for="bHuman">Human</label><br />
+              <input type="radio" name="blackBrain" value="chess.js" id="bChess.js" />
+              <label for="bChess.js">chess.js (Random)</label><br />
+              <input type="radio" name="blackBrain" value="stockfish" id="bStockfish" />
+              <label for="bStockfish">Stockfish</label>&nbsp;
+              <input type="number" name="blackTime" min="1" max="99" value="1" style="width: 3em" id="bTime"/>
+              <label for="blackTime"><b>*</b></label>
+            </fieldset>
+            <hr />
+            <fieldset>
+              <legend>White's Brain</legend>
+              <input type="radio" name="whiteBrain" value="human" id="wHuman" checked="checked" />
+              <label for="wHuman">Human</label><br />
+              <input type="radio" name="whiteBrain" value="chess.js" id="wChess.js" />
+              <label for="wChess.js">chess.js (Random)</label><br />
+              <input type="radio" name="whiteBrain" value="stockfish" id="wStockfish" />
+              <label for="wStockfish">Stockfish</label>&nbsp;
+              <input type="number" name="whiteTime" min="1" max="99" value="1" style="width: 3em" id="wTime"/>
+              <label for="whiteTime"><b>*</b></label>
+            </fieldset>
+          </form>
+          <b>*</b> Thinking time in seconds.
+        </td>
+      </tr>
+    </table>
+
+    <script src="js/json3.min.js"></script>
+    <script src="js/jquery.min.js"></script>
+    <script src="js/chessboard-0.3.0.min.js"></script>
+    <script src="js/chess.min.js"></script>
+    <script src="js/sockjs.min.js"></script>
+    <script src="BluemixChess.js"></script>
+  </body>
+</html>
