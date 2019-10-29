@@ -21,8 +21,9 @@ var moveStockfish = function(thinkingTime) {
   var uciOk = false;
   var isReady = false;
 
-  // Open a WebSocket connection to Stockfish
-  var sock = new WebSocket(stockfishEndpoint);
+    // setup websocket with callbacks
+    var HOST = location.origin.replace(/^http/, 'ws')
+    var sock = new ReconnectingWebSocket(HOST);
 
   // Send 'uci' to init the engine (once the WebSocket connection opens)
   sock.onopen = function() {
