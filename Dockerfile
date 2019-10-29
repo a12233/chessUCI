@@ -1,4 +1,6 @@
 FROM ubuntu:14.04
+
+
 ADD websocketd /root/websocketd
 ADD stockfish_10_x64 /root/stockfish_10_x64
 ADD index.html /root/app/index.html

@@ -81,43 +81,19 @@ var moveStockfish = function(thinkingTime) {
   };
 };
 
-// Execute a move using chess.js
-var moveChessJS = function() {
-  // Pick a random move from all legal moves
-  var moves = game.moves();
-  var move = moves[Math.floor(Math.random() * moves.length)];
-  game.move(move);
-
-  // Trigger onSnapEnd event so everything happens as if a human moved
-  onSnapEnd(true);
-};
-
 // Make the engine play (if appropriate)
 var enginePlays = function() {
   // Don't play if the game is over
   if (!game.game_over()) {
     // Is the computer playing now?
     if (game.turn() === 'w' && whiteBrain !== 'human') {
-      switch(whiteBrain) {
-        case 'stockfish':
           moveStockfish(whiteTime);
-          break;
-        case 'chess.js':
-          moveChessJS();
-          break;
       }
-    }
-    else if (game.turn() === 'b' && blackBrain !== 'human') {
-      switch(blackBrain) {
-        case 'stockfish':
-          moveStockfish(blackTime);
-          break;
-        case 'chess.js':
-          moveChessJS();
-          break;
-        }
+    else if (game.turn() === 'b' && blackBrain !== 'human') { 
+      moveStockfish(blackTime);
     }
   }
+
 };
 
 // Update status span with current game state
