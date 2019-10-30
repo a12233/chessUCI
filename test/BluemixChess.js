@@ -2,7 +2,7 @@
 var statusSpan = $('#status');
 
 // Keep track of who is controlling each side
-var blackBrain = 'human';
+var blackBrain = 'bStockfish';
 var whiteBrain = 'human';
 
 // Thinking time for Stockfish (seconds)
@@ -11,8 +11,6 @@ var whiteTime = 1;
 
 // Populate with the IP address of your Stockfish Container
 var HOST = location.origin.replace(/^http/, 'ws');
-var stockfishEndpoint = HOST+":"+"3000"
-
 // Use chess.js for valid move determination
 var game = new Chess();
 
