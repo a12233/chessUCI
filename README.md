@@ -13,3 +13,7 @@ https://www.ibm.com/developerworks/cloud/library/cl-bluemix-linux-chess-app-trs/
 /App
 
 Talk to stockfish
+
+Using `https://github.com/joewalnes/websocketd` library to talk directly to a stockfish binary
+
+TODO: Use the stockfish.wasm to talk to a complied version of stockfish without directly installing the binary
