@@ -5,8 +5,19 @@
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/reconnecting-websocket/1.0.0/reconnecting-websocket.js"></script>
 <script>
-  
-  // helper function: log message to screen
+  var wasmSupported = typeof WebAssembly === 'object' && WebAssembly.validate(Uint8Array.of(0x0, 0x61, 0x73, 0x6d, 0x01, 0x00, 0x00, 0x00));
+
+  var stockfish = new Worker(wasmSupported ? 'stockfish.wasm.js' : 'stockfish.js');
+
+  stockfish.addEventListener('message', function (e) {
+    // console.log(e.data);
+    log('MESSAGE: ' + e.data);
+  });
+
+  stockfish.postMessage('uci');
+
+
+  // // helper function: log message to screen
   function log(msg) {
     document.getElementById('log').textContent += msg + '\n';
   }
@@ -21,21 +32,22 @@
     }
     });
   function myFunction(){
-    ws.send( document.getElementById("wss uci").value)
+    stockfish.postMessage( document.getElementById("wss uci").value)
     document.getElementById("wss uci").value=""
+    
   }
 
-  // setup websocket with callbacks
-  var HOST = location.origin.replace(/^http/, 'ws')
-  var ws = new ReconnectingWebSocket(HOST);
-  ws.onopen = function() {
-    log('CONNECT');
-  };
-  ws.onclose = function() {
-    log('DISCONNECT');
-  };
-  ws.onmessage = function(event) {
-    log('MESSAGE: ' + event.data);
-  };
+  // // setup websocket with callbacks
+  // var HOST = location.origin.replace(/^http/, 'ws')
+  // var ws = new ReconnectingWebSocket(HOST);
+  // ws.onopen = function() {
+  //   log('CONNECT');
+  // };
+  // ws.onclose = function() {
+  //   log('DISCONNECT');
+  // };
+  // ws.onmessage = function(event) {
+  //   log('MESSAGE: ' + event.data);
+  // };
 
 </script>
