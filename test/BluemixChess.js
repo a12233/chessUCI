@@ -6,83 +6,77 @@ var blackBrain = 'bStockfish';
 var whiteBrain = 'human';
 
 // Thinking time for Stockfish (seconds)
+var thinkingTime = 1;
 var blackTime = 1;
 var whiteTime = 1;
+var uciOk = false;
+var isReady = false;
+var thinking = false; 
+var wasmSupported = typeof WebAssembly === 'object' && WebAssembly.validate(Uint8Array.of(0x0, 0x61, 0x73, 0x6d, 0x01, 0x00, 0x00, 0x00));
+var stockfishRespose; 
 
-// Populate with the IP address of your Stockfish Container
-var HOST = location.origin.replace(/^http/, 'ws');
-// Use chess.js for valid move determination
 var game = new Chess();
 
+var stockfish = new Worker(wasmSupported ? 'stockfish.wasm.js' : 'stockfish.js');
+
+function log(msg) {
+  document.getElementById('log').textContent += msg + '\n';
+}
+
+stockfish.addEventListener('message', function(event){
+  if (event.data === 'uciok') {
+    uciOk = true;
+    // Turn off ponder
+    stockfish.postMessage('setoption name Ponder value false');
+    // Ask the engine if it's ready
+    stockfish.postMessage('isready');
+  }
+
+  // Wait for 'readyok' response from the engine
+  if (event.data === 'readyok') {
+    isReady = true;
+  }
+
+  if (uciOk && isReady) {
+    // Send the game position in FEN
+    if( thinking == false ){
+      stockfish.postMessage('position fen ' + game.fen());
+      // Ask for the next move (think about it for a while)
+      stockfish.postMessage('go movetime ' + thinkingTime * 1000);
+      thinking = true; 
+    }
+    
+    if (event.data.search(/^bestmove/) !== -1) {
+      var move = event.data;
+      console.log(move)
+      // Extract just the move itself
+      move = move.substring(move.indexOf(' ') + 1);
+      if (move.indexOf(' ') !== -1) {
+        move = move.substring(0, move.indexOf(' '));
+      }
+
+      // Make the move
+      game.move({ from: move.substring(0, 2), to: move.substring(2, 4) });
+
+      // Trigger onSnapEnd event so everything happens as if a human moved
+      onSnapEnd(true);
+      thinking = false 
+    }
+  }
+  // log('MESSAGE: ' + event.data);
+});
+
+// Use chess.js for valid move determination
+
 // Execute a move using Stockfish
-var moveStockfish = function(thinkingTime) {
-  var uciOk = false;
-  var isReady = false;
-
-    // setup websocket with callbacks
-    var HOST = location.origin.replace(/^http/, 'ws')
-    var sock = new ReconnectingWebSocket(HOST);
-
-  // Send 'uci' to init the engine (once the WebSocket connection opens)
-  sock.onopen = function() {
-    sock.send('uci');
-  };
-
-  // Handle input from the WebSocket
-  sock.onmessage = function(event) {
-    if (!uciOk || !isReady) {
-      // Wait for 'uciok' response from the engine
-      if (event.data === 'uciok') {
-        uciOk = true;
-
-        // Turn off ponder
-        sock.send('setoption name Ponder value false');
-
-        // Ask the engine if it's ready
-        sock.send('isready');
-      }
-
-      // Wait for 'readyok' response from the engine
-      if (event.data === 'readyok') {
-        isReady = true;
-      }
-
-      if (uciOk && isReady) {
-        // Send the game position in FEN
-        sock.send('position fen ' + game.fen());
-
-        // Ask for the next move (think about it for a while)
-        sock.send('go movetime ' + thinkingTime * 1000);
-      }
-    }
-    else {
-      // Wait for 'bestmove' response
-      if (event.data.search(/^bestmove/) !== -1) {
-        var move = event.data;
-
-        // Got what we need - close the WebSocket
-        sock.close();
-
-        // Extract just the move itself
-        move = move.substring(move.indexOf(' ') + 1);
-        if (move.indexOf(' ') !== -1) {
-          move = move.substring(0, move.indexOf(' '));
-        }
-
-        // Make the move
-        game.move({ from: move.substring(0, 2), to: move.substring(2, 4) });
-
-        // Trigger onSnapEnd event so everything happens as if a human moved
-        onSnapEnd(true);
-      }
-    }
-  };
+var moveStockfish = function() {
+  stockfish.postMessage('uci');
 };
 
 // Make the engine play (if appropriate)
 var enginePlays = function() {
   // Don't play if the game is over
-  if (!game.game_over()) {
+  if (!game.game_over()) { 
     // Is the computer playing now?
     if (game.turn() === 'w' && whiteBrain !== 'human') {
           moveStockfish(whiteTime);
@@ -91,7 +85,6 @@ var enginePlays = function() {
       moveStockfish(blackTime);
     }
   }
-
 };
 
 // Update status span with current game state
