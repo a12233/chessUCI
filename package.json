@@ -9,7 +9,7 @@
     "express": "^4.17.1",
     "stockfish.wasm": "^0.6.1",
     "utf-8-validate": "^5.0.2",
-    "ws": "^7.2.0"
+    "ws": "^7.4.6"
   },
   "devDependencies": {},
   "scripts": {
