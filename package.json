@@ -6,7 +6,7 @@
   "dependencies": {
     "bufferutil": "^4.0.1",
     "chessboardjs": "0.0.1",
-    "express": "^4.17.1",
+    "express": "^4.17.3",
     "stockfish.wasm": "^0.6.1",
     "utf-8-validate": "^5.0.2",
     "ws": "^7.2.0"
